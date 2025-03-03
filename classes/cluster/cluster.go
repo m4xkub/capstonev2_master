@@ -5,13 +5,13 @@ import (
 )
 
 type Cluster struct {
-	CurrentPrimary node.Node
-	NodesInCluster []node.Node
+	CurrentPrimary *node.Node
+	NodesInCluster []*node.Node
 	Status         string
 }
 
 func (c *Cluster) UpdateNodesInCluster() {
-	var NewCluster []node.Node
+	var NewCluster []*node.Node
 	primaryIsUp := true
 	for _, n := range c.NodesInCluster {
 		okay := n.CheckStatus()

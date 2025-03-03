@@ -29,6 +29,9 @@ func (c *Cluster) UpdateNodesInCluster() {
 	if !primaryIsUp {
 		if len(NewCluster) == 0 {
 			// add more node before promote
+			for range 3 {
+				NewCluster = append(NewCluster, node.NewNode())
+			}
 		}
 
 		// promote new primary

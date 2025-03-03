@@ -7,6 +7,7 @@ type Node struct {
 }
 
 func NewNode() *Node {
+	//logic for creating new node on aws
 	createdNode := Node{
 		IpAddress: "",
 	}

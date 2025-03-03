@@ -1,35 +1,27 @@
 package cluster
 
-import "net/http"
+import (
+	"github.com/m4xkub/capstonev2_master/classes/node"
+)
 
 type Cluster struct {
-	CurrentPrimary string
-	NodesInCluster []string
+	CurrentPrimary node.Node
+	NodesInCluster []node.Node
 	Status         string
 }
 
-func (c *Cluster) CheckStatus(ip string) bool {
-	_, err := http.Get(c.CurrentPrimary + "/healthCheck")
-
-	if err != nil {
-		return false
-	} else {
-		return true
-	}
-}
-
 func (c *Cluster) UpdateNodesInCluster() {
-	var NewCluster []string
+	var NewCluster []node.Node
 	primaryIsUp := true
-	for _, ipaddr := range c.NodesInCluster {
-		okay := c.CheckStatus(ipaddr)
+	for _, n := range c.NodesInCluster {
+		okay := n.CheckStatus()
 
 		if okay {
-			NewCluster = append(NewCluster, ipaddr)
+			NewCluster = append(NewCluster, n)
 			continue
 		}
 
-		if ipaddr == c.CurrentPrimary {
+		if n.IpAddress == c.CurrentPrimary.IpAddress {
 			primaryIsUp = false
 		}
 	}
@@ -40,7 +32,7 @@ func (c *Cluster) UpdateNodesInCluster() {
 		}
 
 		// promote new primary
-		c.PromoteNewPrimary(NewCluster[0])
+		c.PromoteNewPrimary(NewCluster[0].IpAddress)
 		c.CurrentPrimary = NewCluster[0]
 	}
 

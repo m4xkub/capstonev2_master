@@ -2,6 +2,7 @@ package node
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
@@ -40,5 +41,44 @@ func (n *Node) CheckStatus() (*HealthCheckResponse, error) {
 	}
 
 	return &healthCheckResponse, nil
+
+}
+
+func (n *Node) PromoteToPrimary() error {
+	status, err := n.CheckStatus()
+	if err != nil {
+		return err
+	}
+
+	if status.Role == "Primary" {
+		return errors.New("node is already roled as primary")
+	}
+
+	_, err = http.Get(n.IpAddress + "/promote")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (n *Node) DemoteToSecondary() error {
+	status, err := n.CheckStatus()
+	if err != nil {
+		return err
+	}
+
+	if status.Role == "Secondary" {
+		return errors.New("node is already roled as secondary")
+	}
+
+	_, err = http.Get(n.IpAddress + "/demote")
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 
 }

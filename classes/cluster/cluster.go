@@ -1,48 +1,50 @@
 package cluster
 
 import (
+	"errors"
+
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
 
 type Cluster struct {
 	CurrentPrimary *node.Node
 	NodesInCluster []*node.Node
-	Status         string
+	//Status         string
 }
 
-func (c *Cluster) UpdateNodesInCluster() {
-	var NewCluster []*node.Node
-	primaryIsUp := true
-	for _, n := range c.NodesInCluster {
-		okay := n.CheckStatus()
+func (c *Cluster) FindPrimary() error {
+	if len(c.NodesInCluster) == 0 {
+		return errors.New("no node in cluster")
+	}
 
-		if okay {
-			NewCluster = append(NewCluster, n)
-			continue
+	for _, node := range c.NodesInCluster {
+		status, err := node.CheckStatus()
+		if err != nil {
+			return err
 		}
 
-		if n.IpAddress == c.CurrentPrimary.IpAddress {
-			primaryIsUp = false
+		if status.Role == "Primary" && status.DiskStatus == "UpToDate" {
+			c.CurrentPrimary = node
+			return nil
 		}
 	}
 
-	if !primaryIsUp {
-		if len(NewCluster) == 0 {
-			// add more node before promote
-			for range 3 {
-				NewCluster = append(NewCluster, node.NewNode())
-			}
-		}
-
-		// promote new primary
-		c.PromoteNewPrimary(NewCluster[0].IpAddress)
-		c.CurrentPrimary = NewCluster[0]
-	}
-
-	c.NodesInCluster = NewCluster
+	return errors.New("primary not found")
 }
 
 func (c *Cluster) PromoteNewPrimary(ipaddr string) error {
-	//to do
+
 	return nil
+}
+
+func (c *Cluster) GetPrimary() (string, error) {
+	status, err := c.CurrentPrimary.CheckStatus()
+	if err != nil {
+		return "", err
+	}
+
+	if !(status.Role == "Primary" && status.DiskStatus == "UpToDate") {
+		c.FindPrimary()
+	}
+	return c.CurrentPrimary.IpAddress, nil
 }

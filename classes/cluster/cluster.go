@@ -37,6 +37,19 @@ func (c *Cluster) PromoteNewPrimary(ipaddr string) error {
 	return nil
 }
 
+func (c *Cluster) HavePrimary() bool {
+
+	for _, node := range c.NodesInCluster {
+		status, _ := node.CheckStatus()
+
+		if status.Role == "Primary" {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (c *Cluster) GetPrimary() (string, error) {
 	status, err := c.CurrentPrimary.CheckStatus()
 	if err != nil {

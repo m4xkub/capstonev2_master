@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"errors"
-
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
 
@@ -11,6 +10,8 @@ type Cluster struct {
 	NodesInCluster []*node.Node
 	//Status         string
 }
+
+var ClusterInstance Cluster
 
 func (c *Cluster) UpdateCurrentPrimary() error {
 	if len(c.NodesInCluster) == 0 {

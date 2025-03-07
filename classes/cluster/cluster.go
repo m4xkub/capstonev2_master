@@ -12,7 +12,7 @@ type Cluster struct {
 	//Status         string
 }
 
-func (c *Cluster) FindPrimary() error {
+func (c *Cluster) UpdateCurrentPrimary() error {
 	if len(c.NodesInCluster) == 0 {
 		return errors.New("no node in cluster")
 	}
@@ -22,19 +22,21 @@ func (c *Cluster) FindPrimary() error {
 		if err != nil {
 			return err
 		}
-
-		if status.Role == "Primary" && status.DiskStatus == "UpToDate" {
+		//&& status.DiskStatus == "UpToDate"
+		if status.Role == "Primary" {
 			c.CurrentPrimary = node
 			return nil
 		}
 	}
 
-	return errors.New("primary not found")
-}
-
-func (c *Cluster) PromoteNewPrimary(ipaddr string) error {
+	// return errors.New("primary not found")
+	// if not found primary
+	target_node := c.NodesInCluster[0]
+	target_node.PromoteToPrimary()
+	c.CurrentPrimary = target_node
 
 	return nil
+
 }
 
 func (c *Cluster) HavePrimary() bool {
@@ -56,8 +58,12 @@ func (c *Cluster) GetPrimary() (string, error) {
 		return "", err
 	}
 
-	if !(status.Role == "Primary" && status.DiskStatus == "UpToDate") {
-		c.FindPrimary()
+	if !(status.Role == "Primary") {
+		c.UpdateCurrentPrimary()
+	}
+
+	if !(status.DiskStatus == "UpToDate") {
+		return "", errors.New("waiting for primary to be ready")
 	}
 	return c.CurrentPrimary.IpAddress, nil
 }

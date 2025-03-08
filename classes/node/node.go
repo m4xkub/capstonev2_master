@@ -3,6 +3,7 @@ package node
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 )
@@ -39,6 +40,9 @@ func (n *Node) CheckStatus() (*HealthCheckResponse, error) {
 	if err := json.Unmarshal(body, &healthCheckResponse); err != nil {
 		return nil, err
 	}
+	fmt.Println("What the fuck")
+	fmt.Println(healthCheckResponse)
+	fmt.Println("What the fuck")
 
 	return &healthCheckResponse, nil
 

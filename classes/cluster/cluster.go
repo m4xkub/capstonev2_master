@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
@@ -41,6 +42,7 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 func (c *Cluster) HavePrimary() bool {
 
 	for _, node := range c.NodesInCluster {
+		fmt.Println("here")
 		status, err := node.CheckStatus()
 
 		if err != nil {
@@ -52,11 +54,17 @@ func (c *Cluster) HavePrimary() bool {
 		}
 	}
 
+	print(len(c.NodesInCluster))
+
 	return false
 }
 
 func (c *Cluster) GetPrimary() (string, error) {
+	if c.CurrentPrimary == nil {
+		return "", errors.New("update primary in cluster is needed before get one")
+	}
 	status, err := c.CurrentPrimary.CheckStatus()
+
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +72,6 @@ func (c *Cluster) GetPrimary() (string, error) {
 	if !(status.Role == "Primary") {
 		c.UpdateCurrentPrimary()
 	}
-
 	if !(status.DiskStatus == "UpToDate") {
 		return "", errors.New("waiting for primary to be ready")
 	}

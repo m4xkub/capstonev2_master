@@ -8,8 +8,7 @@ import (
 func main() {
 	r := gin.Default()
 
-	// Add node
-
+	//Add node
 	r.POST("/AddNode", services.AddNode)
 
 	// Get primary IP

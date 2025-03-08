@@ -41,7 +41,11 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 func (c *Cluster) HavePrimary() bool {
 
 	for _, node := range c.NodesInCluster {
-		status, _ := node.CheckStatus()
+		status, err := node.CheckStatus()
+
+		if err != nil {
+			return false
+		}
 
 		if status.Role == "Primary" {
 			return true

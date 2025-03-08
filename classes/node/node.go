@@ -25,7 +25,7 @@ func NewNode(ip string) *Node {
 }
 
 func (n *Node) CheckStatus() (*HealthCheckResponse, error) {
-	response, err := http.Get(n.IpAddress + "/healthCheck")
+	response, err := http.Get("http://" + n.IpAddress + ":8080" + "/healthCheck")
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (n *Node) PromoteToPrimary() error {
 		return errors.New("node is already roled as primary")
 	}
 
-	_, err = http.Get(n.IpAddress + "/promote")
+	_, err = http.Get("http://" + n.IpAddress + ":8080" + "/promote")
 
 	if err != nil {
 		return err
@@ -73,7 +73,7 @@ func (n *Node) DemoteToSecondary() error {
 		return errors.New("node is already roled as secondary")
 	}
 
-	_, err = http.Get(n.IpAddress + "/demote")
+	_, err = http.Get("http://" + n.IpAddress + ":8080" + "/demote")
 
 	if err != nil {
 		return err

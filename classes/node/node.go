@@ -16,10 +16,10 @@ type HealthCheckResponse struct {
 	DiskStatus string `json:"disk-status" example:"UpToDate"`
 }
 
-func NewNode() *Node {
+func NewNode(ip string) *Node {
 	//logic for creating new node on aws
 	createdNode := Node{
-		IpAddress: "",
+		IpAddress: ip,
 	}
 	return &createdNode
 }

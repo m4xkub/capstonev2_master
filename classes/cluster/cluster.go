@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"errors"
+
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
 
@@ -29,9 +30,6 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 			return nil
 		}
 	}
-
-	// return errors.New("primary not found")
-	// if not found primary
 	target_node := c.NodesInCluster[0]
 	target_node.PromoteToPrimary()
 	c.CurrentPrimary = target_node

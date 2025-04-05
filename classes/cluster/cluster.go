@@ -2,7 +2,6 @@ package cluster
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
@@ -10,7 +9,6 @@ import (
 type Cluster struct {
 	CurrentPrimary *node.Node
 	NodesInCluster []*node.Node
-	//Status         string
 }
 
 var ClusterInstance Cluster
@@ -25,7 +23,6 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 		if err != nil {
 			return err
 		}
-		//&& status.DiskStatus == "UpToDate"
 		if status.Role == "Primary" {
 			c.CurrentPrimary = node
 			return nil
@@ -42,7 +39,6 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 func (c *Cluster) HavePrimary() bool {
 
 	for _, node := range c.NodesInCluster {
-		fmt.Println("here")
 		status, err := node.CheckStatus()
 
 		if err != nil {

@@ -1,0 +1,13 @@
+**/.terraform/*
+
+*.tfstate
+*.tfstate.*
+
+# Sensitive variable files
+*.tfvars
+*.tfvars.json
+private.tfvars
+
+.terraform.lock.hcl
+
+output.json

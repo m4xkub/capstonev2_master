@@ -6,7 +6,11 @@ import (
 	"os/exec"
 )
 
-func MigrateCluster() {
+func InitTerraform() {
+	_ = exec.Command("terraform", "-chdir=terraform", "init")
+}
+
+func Enable2Cluster() {
 	createClusterVariableFile := "-var-file=migrate.tfvars"
 	cmd := exec.Command("terraform", "-chdir=terraform", "apply", createClusterVariableFile, "-auto-approve")
 

@@ -11,7 +11,10 @@ type Cluster struct {
 	NodesInCluster []*node.Node
 }
 
-var ClusterInstance Cluster
+var ClusterInstance *Cluster
+
+var DiskCluster *Cluster
+var MigratedDiskCluster *Cluster
 
 func (c *Cluster) UpdateCurrentPrimary() error {
 	if len(c.NodesInCluster) == 0 {
@@ -71,5 +74,5 @@ func (c *Cluster) GetPrimary() (string, error) {
 	if !(status.DiskStatus == "UpToDate") {
 		return "", errors.New("waiting for primary to be ready")
 	}
-	return c.CurrentPrimary.IpAddress, nil
+	return c.CurrentPrimary.PublicIp, nil
 }

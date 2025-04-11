@@ -9,7 +9,8 @@ import (
 )
 
 type Node struct {
-	IpAddress string
+	PublicIp  string
+	PrivateIp string
 }
 
 type HealthCheckResponse struct {
@@ -17,16 +18,17 @@ type HealthCheckResponse struct {
 	DiskStatus string `json:"disk-status" example:"UpToDate"`
 }
 
-func NewNode(ip string) *Node {
+func NewNode(publicIp string, privateIp string) *Node {
 	//logic for creating new node on aws
 	createdNode := Node{
-		IpAddress: ip,
+		PublicIp:  publicIp,
+		PrivateIp: privateIp,
 	}
 	return &createdNode
 }
 
 func (n *Node) CheckStatus() (*HealthCheckResponse, error) {
-	response, err := http.Get("http://" + n.IpAddress + ":8080" + "/healthCheck")
+	response, err := http.Get("http://" + n.PublicIp + ":8080" + "/healthCheck")
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +60,7 @@ func (n *Node) PromoteToPrimary() error {
 		return errors.New("node is already roled as primary")
 	}
 
-	_, err = http.Get("http://" + n.IpAddress + ":8080" + "/promote")
+	_, err = http.Get("http://" + n.PublicIp + ":8080" + "/promote")
 
 	if err != nil {
 		return err
@@ -77,7 +79,7 @@ func (n *Node) DemoteToSecondary() error {
 		return errors.New("node is already roled as secondary")
 	}
 
-	_, err = http.Get("http://" + n.IpAddress + ":8080" + "/demote")
+	_, err = http.Get("http://" + n.PublicIp + ":8080" + "/demote")
 
 	if err != nil {
 		return err

@@ -1,0 +1,5 @@
+package handleterraform
+
+func MigrateData() {
+
+}

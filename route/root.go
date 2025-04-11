@@ -3,13 +3,11 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/m4xkub/capstonev2_master/services"
+	terraformservice "github.com/m4xkub/capstonev2_master/services/TerraformService"
 )
 
 func Route() {
 	r := gin.Default()
-
-	//Add node
-	r.POST("/AddNode", services.AddNode)
 
 	// Get primary IP
 	r.GET("/PrimaryIP", services.GetPrimary)
@@ -20,10 +18,10 @@ func Route() {
 	// Update primary
 	r.GET("/UpdatePrimary", services.UpdateCurrentPrimary)
 
-	r.GET("/EnableCluster1", services.EnableCluster1)
-	r.GET("/DestroyCluster", services.DestroyCluster)
-	r.GET("/EnableCluster2", services.EnableCluster2)
-	r.GET("/MigrateCluster", services.MigrateCluster)
+	r.GET("/EnableCluster1", terraformservice.EnableCluster1)
+	r.GET("/EnableCluster2", terraformservice.EnableCluster2)
+	r.GET("/DestroyCluster", terraformservice.DestroyCluster)
+	r.GET("/Enable2Cluster", terraformservice.Enable2Cluster)
 
 	r.Run(":8080")
 }

@@ -1,5 +1,5 @@
 resource "aws_instance" "disk" {
-  count                       = var.enable_cluster_1 ? 3 : 0
+  count                       = var.enable_cluster_1 ? 2 : 0
   ami                         = var.ec2Ami
   instance_type               = var.instanceType
   key_name                    = var.keyName
@@ -13,7 +13,7 @@ resource "aws_instance" "disk" {
 }
 
 resource "aws_instance" "disk-migrate" {
-  count                       = var.enable_cluster_2 ? 3 : 0
+  count                       = var.enable_cluster_2 ? 2 : 0
   ami                         = var.ec2Ami
   instance_type               = var.instanceType
   key_name                    = var.keyName
@@ -26,3 +26,40 @@ resource "aws_instance" "disk-migrate" {
   }
 }
 
+resource "aws_ebs_volume" "disk" {
+  for_each          = { for idx, instance in aws_instance.disk : idx => instance }
+  availability_zone = each.value.availability_zone
+  size              = 10
+  type              = "gp3"
+
+  tags = {
+    Name = "ebs-disk-${each.key}"
+  }
+}
+
+resource "aws_volume_attachment" "disk" {
+  for_each     = aws_ebs_volume.disk
+  device_name  = "/dev/sdf"
+  volume_id    = each.value.id
+  instance_id  = aws_instance.disk[each.key].id
+  force_detach = true
+}
+
+resource "aws_ebs_volume" "disk-migrate" {
+  for_each          = { for idx, instance in aws_instance.disk-migrate : idx => instance }
+  availability_zone = each.value.availability_zone
+  size              = 10
+  type              = "gp3"
+
+  tags = {
+    Name = "ebs-disk-migrate-${each.key}"
+  }
+}
+
+resource "aws_volume_attachment" "disk-migrate" {
+  for_each     = aws_ebs_volume.disk-migrate
+  device_name  = "/dev/sdf"
+  volume_id    = each.value.id
+  instance_id  = aws_instance.disk-migrate[each.key].id
+  force_detach = true
+}

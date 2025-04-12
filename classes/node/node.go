@@ -9,6 +9,7 @@ import (
 )
 
 type Node struct {
+	Id        string
 	PublicIp  string
 	PrivateIp string
 }

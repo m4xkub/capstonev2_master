@@ -8,6 +8,7 @@ import (
 
 	"github.com/m4xkub/capstonev2_master/classes/cluster"
 	"github.com/m4xkub/capstonev2_master/classes/node"
+	drbdservice "github.com/m4xkub/capstonev2_master/services/DrbdService"
 )
 
 type OutputEntry struct {
@@ -49,8 +50,9 @@ func HandleTerraformCluster() {
 		var tmpNodes []*node.Node
 		var tmpDiskCluster cluster.Cluster
 
-		for i := range 3 {
+		for i := range 2 {
 			var n node.Node
+			n.Id = data["disk_id"].Value[i]
 			n.PrivateIp = data["disk_private_ips"].Value[i]
 			n.PublicIp = data["disk_public_ips"].Value[i]
 			tmpNodes = append(tmpNodes, &n)
@@ -65,8 +67,9 @@ func HandleTerraformCluster() {
 		var tmpNodes []*node.Node
 		var tmpMigrateDiskCluster cluster.Cluster
 
-		for i := range 3 {
+		for i := range 2 {
 			var n node.Node
+			n.Id = data["disk_migrate_id"].Value[i]
 			n.PrivateIp = data["disk_migrate_private_ips"].Value[i]
 			n.PublicIp = data["disk_migrate_public_ips"].Value[i]
 			tmpNodes = append(tmpNodes, &n)
@@ -88,11 +91,17 @@ func HandleTerraformCluster() {
 	} else {
 		// didnt have any cluster
 		cluster.ClusterInstance = nil
+		return
 	}
-	fmt.Println("**********************")
+	fmt.Println("Clsuter Information **********************")
 	for idx, e := range cluster.ClusterInstance.NodesInCluster {
 		fmt.Println(idx, *e)
 	}
-	fmt.Println("**********************")
+	fmt.Println("******************************************")
+	// wait for instance to be ready
+	//time.Sleep(5 * time.Second)
+	WaitForInstance()
+	// init drbd to new cluster
+	drbdservice.InitDrbd()
 
 }

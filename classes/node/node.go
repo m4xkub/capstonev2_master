@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+
+	apiservice "github.com/m4xkub/capstonev2_master/services/ApiService"
 )
 
 type Node struct {
@@ -67,6 +69,11 @@ func (n *Node) PromoteToPrimary() error {
 		return err
 	}
 
+	_, err = apiservice.Get(fmt.Sprintf("http://%s:8080/mountVolume", n.PublicIp))
+
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

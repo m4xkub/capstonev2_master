@@ -7,6 +7,22 @@ resource "aws_instance" "disk" {
   vpc_security_group_ids      = [aws_security_group.security-group.id]
   associate_public_ip_address = true
 
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install golang-go -y
+
+    echo "postfix postfix/main_mailer_type select No configuration" | sudo debconf-set-selections
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y drbd-utils postfix
+
+    git clone https://github.com/m4xkub/capstonev2_worker.git /home/ubuntu/capstonev2_worker
+    chown -R ubuntu:ubuntu /home/ubuntu/capstonev2_worker
+
+
+    sudo -u ubuntu bash -c "cd /home/ubuntu/capstonev2_worker && nohup go run main.go &"
+
+  EOF
+
   tags = {
     Name = "disk-${count.index + 1}"
   }
@@ -20,7 +36,21 @@ resource "aws_instance" "disk-migrate" {
   subnet_id                   = aws_subnet.private-subnet.id
   vpc_security_group_ids      = [aws_security_group.security-group.id]
   associate_public_ip_address = true
+  user_data                   = <<-EOF
+    #!/bin/bash
+    sudo apt update && sudo apt upgrade -y
+    sudo apt install golang-go -y
 
+    echo "postfix postfix/main_mailer_type select No configuration" | sudo debconf-set-selections
+    sudo DEBIAN_FRONTEND=noninteractive apt install -y drbd-utils postfix
+
+    git clone https://github.com/m4xkub/capstonev2_worker.git /home/ubuntu/capstonev2_worker
+    chown -R ubuntu:ubuntu /home/ubuntu/capstonev2_worker
+
+
+    sudo -u ubuntu bash -c "cd /home/ubuntu/capstonev2_worker && nohup go run main.go &"
+
+  EOF
   tags = {
     Name = "disk-migrate-${count.index + 1}"
   }

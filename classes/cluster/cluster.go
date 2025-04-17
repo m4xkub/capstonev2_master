@@ -7,6 +7,7 @@ import (
 )
 
 type Cluster struct {
+	IsInitDrbd     bool
 	CurrentPrimary *node.Node
 	NodesInCluster []*node.Node
 }

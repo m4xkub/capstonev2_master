@@ -81,6 +81,9 @@ func HandleTerraformCluster() {
 		haveMigrateDiskCluster = true
 	}
 
+	WaitForInstance(cluster.DiskCluster)
+	WaitForInstance(cluster.MigratedDiskCluster)
+
 	if haveDiskCluster && haveMigrateDiskCluster {
 		// do something
 		MigrateData()
@@ -93,15 +96,14 @@ func HandleTerraformCluster() {
 		cluster.ClusterInstance = nil
 		return
 	}
-	fmt.Println("Clsuter Information **********************")
-	for idx, e := range cluster.ClusterInstance.NodesInCluster {
-		fmt.Println(idx, *e)
+
+	if cluster.DiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.DiskCluster) {
+		fmt.Println("init drbd on disk cluster")
+		drbdservice.InitDrbd(cluster.DiskCluster)
 	}
-	fmt.Println("******************************************")
-	// wait for instance to be ready
-	//time.Sleep(5 * time.Second)
-	WaitForInstance()
-	// init drbd to new cluster
-	drbdservice.InitDrbd()
+	if cluster.MigratedDiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.MigratedDiskCluster) {
+		fmt.Println("init drbd on migrate disk cluster")
+		drbdservice.InitDrbd(cluster.MigratedDiskCluster)
+	}
 
 }

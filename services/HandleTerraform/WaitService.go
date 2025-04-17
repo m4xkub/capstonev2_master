@@ -10,7 +10,11 @@ import (
 	"github.com/m4xkub/capstonev2_master/classes/cluster"
 )
 
-func WaitForInstance() {
+func WaitForInstance(cluster *cluster.Cluster) {
+	if cluster == nil {
+		return
+	}
+
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("ap-southeast-7"))
 	if err != nil {
 		fmt.Println("err here")
@@ -18,11 +22,7 @@ func WaitForInstance() {
 	}
 	client := ec2.NewFromConfig(cfg)
 
-	if cluster.ClusterInstance == nil {
-		return
-	}
-
-	for _, e := range cluster.ClusterInstance.NodesInCluster {
+	for _, e := range cluster.NodesInCluster {
 		waitUntilRunning(client, e.Id)
 		waitUntilStatusOK(client, e.Id)
 	}

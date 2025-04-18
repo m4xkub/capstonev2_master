@@ -86,7 +86,7 @@ func HandleTerraformCluster() {
 
 	if haveDiskCluster && haveMigrateDiskCluster {
 		// do something
-		MigrateData()
+		// MigrateData()
 	} else if haveDiskCluster {
 		cluster.ClusterInstance = cluster.DiskCluster
 	} else if haveMigrateDiskCluster {

@@ -5,6 +5,7 @@ import (
 	"os/exec"
 
 	"github.com/m4xkub/capstonev2_master/route"
+	handleterraform "github.com/m4xkub/capstonev2_master/services/HandleTerraform"
 )
 
 func main() {
@@ -16,5 +17,6 @@ func main() {
 	} else {
 		fmt.Println("Success:", string(output))
 	}
+	handleterraform.HandleTerraformCluster()
 	route.Route()
 }

@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/m4xkub/capstonev2_master/classes/cluster"
 	"github.com/m4xkub/capstonev2_master/services"
 	apiservice "github.com/m4xkub/capstonev2_master/services/ApiService"
-	drbdservice "github.com/m4xkub/capstonev2_master/services/DrbdService"
+	handleterraform "github.com/m4xkub/capstonev2_master/services/HandleTerraform"
 	terraformservice "github.com/m4xkub/capstonev2_master/services/TerraformService"
 )
 
@@ -41,9 +40,13 @@ func Route() {
 		c.JSON(200, *x)
 	})
 
-	r.GET("testdrbd", func(c *gin.Context) {
-		drbdservice.InitDrbd(cluster.DiskCluster)
+	r.GET("/testMigrate", func(c *gin.Context) {
+		handleterraform.MigrateData()
 	})
+
+	// r.GET("testdrbd", func(c *gin.Context) {
+	// 	drbdservice.InitDrbd(cluster.DiskCluster)
+	// })
 
 	r.Run(":8080")
 }

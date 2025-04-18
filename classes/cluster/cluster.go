@@ -2,6 +2,7 @@ package cluster
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/m4xkub/capstonev2_master/classes/node"
 )
@@ -25,16 +26,28 @@ func (c *Cluster) UpdateCurrentPrimary() error {
 	for _, node := range c.NodesInCluster {
 		status, err := node.CheckStatus()
 		if err != nil {
-			return err
+			fmt.Println(err.Error())
+			continue
 		}
 		if status.Role == "Primary" {
 			c.CurrentPrimary = node
 			return nil
 		}
 	}
-	target_node := c.NodesInCluster[0]
-	target_node.PromoteToPrimary()
-	c.CurrentPrimary = target_node
+
+	for _, node := range c.NodesInCluster {
+		status, err := node.CheckStatus()
+		if err != nil {
+			fmt.Println(err.Error())
+			continue
+		}
+		if status.Role == "Secondary" {
+			node.PromoteToPrimary()
+			c.CurrentPrimary = node
+
+			return nil
+		}
+	}
 
 	return nil
 
@@ -60,20 +73,22 @@ func (c *Cluster) HavePrimary() bool {
 }
 
 func (c *Cluster) GetPrimary() (string, error) {
-	if c.CurrentPrimary == nil {
-		return "", errors.New("update primary in cluster is needed before get one")
-	}
-	status, err := c.CurrentPrimary.CheckStatus()
+	// if c.CurrentPrimary == nil {
+	// 	return "", errors.New("update primary in cluster is needed before get one")
+	// }
+	// status, err := c.CurrentPrimary.CheckStatus()
 
-	if err != nil {
-		return "", err
-	}
+	// if err != nil {
+	// 	return "", err
+	// }
 
-	if !(status.Role == "Primary") {
-		c.UpdateCurrentPrimary()
-	}
-	if !(status.DiskStatus == "UpToDate") {
-		return "", errors.New("waiting for primary to be ready")
-	}
+	// if !(status.Role == "Primary") {
+	// 	c.UpdateCurrentPrimary()
+	// }
+	// if !(status.DiskStatus == "UpToDate") {
+	// 	return "", errors.New("waiting for primary to be ready")
+	// }
+
+	c.UpdateCurrentPrimary()
 	return c.CurrentPrimary.PublicIp, nil
 }

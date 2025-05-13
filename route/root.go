@@ -14,7 +14,7 @@ func Route() {
 	r := gin.Default()
 
 	// Get primary IP
-	r.GET("/PrimaryIP", services.GetPrimary)
+	r.POST("/PrimaryIP", services.GetPrimary)
 
 	// Check if this node is primary
 	r.GET("/HavePrimary", services.HavePrimary)

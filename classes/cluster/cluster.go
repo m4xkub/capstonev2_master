@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/m4xkub/capstonev2_master/classes/node"
+	apiservice "github.com/m4xkub/capstonev2_master/services/ApiService"
 )
 
 type Cluster struct {
@@ -90,5 +91,7 @@ func (c *Cluster) GetPrimary() (string, error) {
 	// }
 
 	c.UpdateCurrentPrimary()
+	apiservice.Get(fmt.Sprintf("http://%s:8080/initNbd", c.CurrentPrimary.PublicIp))
+
 	return c.CurrentPrimary.PublicIp, nil
 }

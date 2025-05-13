@@ -96,12 +96,11 @@ func HandleTerraformCluster() {
 		cluster.ClusterInstance = nil
 		return
 	}
-
-	if cluster.DiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.DiskCluster) {
+	if cluster.DiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.DiskCluster) && !HaveTerminated(cluster.DiskCluster) {
 		fmt.Println("init drbd on disk cluster")
 		drbdservice.InitDrbd(cluster.DiskCluster)
 	}
-	if cluster.MigratedDiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.MigratedDiskCluster) {
+	if cluster.MigratedDiskCluster != nil && !drbdservice.IsInitedDrbd(cluster.MigratedDiskCluster) && !HaveTerminated(cluster.MigratedDiskCluster) {
 		fmt.Println("init drbd on migrate disk cluster")
 		drbdservice.InitDrbd(cluster.MigratedDiskCluster)
 	}
